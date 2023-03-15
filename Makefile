@@ -2,7 +2,7 @@ all: opencv_test.pgr
 
 CC=g++
 CFLAGS=-Wall -O3
-LDFLAGS=
+LDFLAGS= -fopenmp
 
 CFLAGS += $(shell pkg-config --cflags opencv4)
 LDFLAGS += $(shell pkg-config --libs opencv4)
