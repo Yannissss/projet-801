@@ -13,4 +13,4 @@ using namespace std;
 
 bool GaussSeidel_Seq(const Mat mSrc, Mat &mDst);
 
-#endif 
+#endif

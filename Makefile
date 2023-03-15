@@ -10,7 +10,7 @@ DEPS := $(OBJS:.o=.d)
 INC_DIRS  := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-ifdef $(CC)
+ifeq ($(CC), g++)
 CC      ?= g++
 CFLAGS  += -Wall -O3
 LDFLAGS += -fopenmp -lstdc++
