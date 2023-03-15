@@ -1,8 +1,8 @@
 all: opencv_test.pgr
 
-CC=g++
-CFLAGS=-Wall -O3
-LDFLAGS= -fopenmp
+CC      ?= clang++
+CFLAGS  += -Wall -O3 --gcc-toolchain=/apps/2021/gcc/10.2/
+LDFLAGS += -fopenmp -lstdc++
 
 CFLAGS += $(shell pkg-config --cflags opencv4)
 LDFLAGS += $(shell pkg-config --libs opencv4)
