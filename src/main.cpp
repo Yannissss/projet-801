@@ -1,11 +1,12 @@
+#include <cstdio>
 #include <iostream>
+#include <cstdlib>
 #include <opencv2/imgcodecs.hpp>
+#include <omp.h>
 
-#include "gauss_seidel.h"
+#include "gaussSeidel.h"
 #include "gaussianNoise.h"
 #include "stopwatch.hpp"
-
-#include <omp.h>
 
 using namespace cv;
 using namespace std;
@@ -15,7 +16,7 @@ using namespace std;
 int main(int argc, char **argv) {
     CommandLineParser parser(argc, argv,
                              "{@input   |img/lena.jpg|input image}");
-    parser.printMessage();
+    //parser.printMessage();
 
     String imageName = parser.get<String>("@input");
     string image_path = samples::findFile(imageName);
@@ -30,7 +31,7 @@ int main(int argc, char **argv) {
     Mat mColorGaussSeidel(img.size(), img.type());
     img.copyTo(mColorGaussSeidel);
     
-    cout << "Gauss-Seidel: " << NOISE_ITER << " iteration(s)" << endl;
+    printf("%-22s: %d iteration(s) \n", "Gauss-Seidel", NOISE_ITER);
     sw.start();
     for (int i = 0; i < NOISE_ITER; ++i) {
         GaussSeidel_Seq(img, mColorGaussSeidel);
@@ -41,7 +42,7 @@ int main(int argc, char **argv) {
         }
     }
     sw.stop();
-    cout << "Time : ";
+    printf("%-22s: ", "Time");
     sw.print_human_readable();
     cout << endl; 
 

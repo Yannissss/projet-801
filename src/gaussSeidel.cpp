@@ -1,4 +1,4 @@
-#include "gauss_seidel.h"
+#include "gaussSeidel.h"
 
 #include <opencv2/core/hal/interface.h>
 #include <opencv2/core/matx.hpp>

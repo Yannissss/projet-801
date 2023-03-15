@@ -1,3 +1,3 @@
-/obj
-opencv_test.pgr
-opencv2
+/build
+/res
+gauss-seidel
