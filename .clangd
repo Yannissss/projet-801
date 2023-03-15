@@ -1,3 +1,4 @@
 CompileFlags: # Tweak the parse settings
   Add: 
     - "--include-directory=/apps/2021/opencv/4.5.2-contrib/include/opencv4"
+    - "-I/usr/lib/gcc/x86_64-redhat-linux/4.8.2/include/"

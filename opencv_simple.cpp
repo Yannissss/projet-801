@@ -3,6 +3,9 @@
 
 #include "gauss_seidel.h"
 #include "gaussianNoise.h"
+#include "stopwatch.hpp"
+
+#include <omp.h>
 
 using namespace cv;
 using namespace std;
@@ -23,8 +26,12 @@ int main(int argc, char **argv) {
     }
 
     // Gauss-Seidel
+    Stopwatch sw;
     Mat mColorGaussSeidel(img.size(), img.type());
     img.copyTo(mColorGaussSeidel);
+    
+    cout << "Gauss-Seidel: " << NOISE_ITER << " iteration(s)" << endl;
+    sw.start();
     for (int i = 0; i < NOISE_ITER; ++i) {
         GaussSeidel_Seq(img, mColorGaussSeidel);
         if (i < (NOISE_ITER - 1)) {
@@ -33,6 +40,10 @@ int main(int argc, char **argv) {
             mColorGaussSeidel.data = tmp;
         }
     }
+    sw.stop();
+    cout << "Time : ";
+    sw.print_human_readable();
+    cout << endl; 
 
     // Gauss classique
     Mat mColorNoise(img.size(), img.type());
