@@ -1,0 +1,4 @@
+*.o
+*.a
+Kokkos*
+gauss-seidel.cuda
