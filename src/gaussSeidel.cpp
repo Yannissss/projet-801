@@ -58,12 +58,64 @@ bool GaussSeidel_Seq(const Mat mSrc, Mat &mDst) {
     }
 
     if (mSrc.rows > mSrc.cols) {
-        cout << "[Error]! #Rows > #Cols not supported by GaussSeidel"
-                "operations"
-             << endl;
-        return false;
+        GaussSeidel_RowsSup(mSrc, mDst);
+    } else {
+        GaussSeidel_ColsSup(mSrc, mDst);
+    }
+    return true;
+    
+}
+
+void GaussSeidel_RowsSup(const Mat mSrc, Mat &mDst) {
+    // Ascendance par ligne (Partie I)
+    for (int Diag = 0; Diag < mSrc.cols; Diag++) {
+        for (int Row = 0; Row <= Diag; Row++) {
+            int Col = Diag - Row;
+            Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+
+            // Debug
+            // Des_Pixel.val[0] = 255;
+            // Des_Pixel.val[1] = 0;
+            // Des_Pixel.val[2] = 0;
+
+            Blur(mSrc, mDst, Des_Pixel, Row, Col);
+        }
     }
 
+    // Translation du milieu (Partie II)
+    for (int Diag = mSrc.rows; Diag < mSrc.cols; Diag++) {
+        for (int Row = 0; Row < mSrc.rows; Row++) {
+            int Col = Diag - Row;
+            Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+
+            // Debug
+            // Des_Pixel.val[0] = 0;
+            // Des_Pixel.val[1] = 255;
+            // Des_Pixel.val[2] = 0;
+
+            Blur(mSrc, mDst, Des_Pixel, Row, Col);
+        }
+    }
+
+    // Descendance par colonne (Partie III)
+    // Le 1 est pour éviter la coupure avec le milieu
+    for (int t = 1; t < mSrc.rows; t++) {
+        int Diag = mSrc.cols + t - 1;
+        for (int Row = t; Row < mSrc.rows; Row++) {
+            int Col = Diag - Row;
+            Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+
+            // Debug
+            // Des_Pixel.val[0] = 0;
+            // Des_Pixel.val[1] = 0;
+            // Des_Pixel.val[2] = 255;
+
+            Blur(mSrc, mDst, Des_Pixel, Row, Col);
+        }
+    }
+
+}
+void GaussSeidel_ColsSup(const Mat mSrc, Mat &mDst) {
     // Ascendance par ligne (Partie I)
     for (int Diag = 0; Diag < mSrc.rows; Diag++) {
         for (int Row = 0; Row <= Diag; Row++) {
@@ -111,5 +163,4 @@ bool GaussSeidel_Seq(const Mat mSrc, Mat &mDst) {
         }
     }
 
-    return true;
 }

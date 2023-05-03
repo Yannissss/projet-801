@@ -12,5 +12,7 @@ using namespace cv;
 using namespace std;
 
 bool GaussSeidel_Seq(const Mat mSrc, Mat &mDst);
+void GaussSeidel_RowsSup(const Mat mSrc, Mat &mDst);
+void GaussSeidel_ColsSup(const Mat mSrc, Mat &mDst);
 
 #endif

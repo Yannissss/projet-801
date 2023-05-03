@@ -16,7 +16,7 @@ CFLAGS  += -Wall -O3
 LDFLAGS += -fopenmp -lstdc++
 else
 CC      ?= clang++
-CFLAGS  += -Wall -O3 --gcc-toolchain=/apps/2021/gcc/10.2/
+CFLAGS  += -Wall -O3 
 LDFLAGS += -fopenmp -lstdc++
 endif
 
