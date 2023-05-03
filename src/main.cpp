@@ -26,6 +26,18 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    Mat mColorNoise(img.size(), img.type());
+    // for (int i = 0; i < NOISE_ITER; ++i) {
+    //     AddGaussianNoise(img, mColorNoise, 0, 30.0);
+    //     if (i < (NOISE_ITER - 1)) {
+    //         uint8_t *tmp = img.data;
+    //         img.data = mColorNoise.data;
+    //         mColorNoise.data = tmp;
+    //     }
+    // }
+    AddGaussianNoise_Opencv(img,mColorNoise,10,30.0);//I recommend to use
+    // this way!
+
     // Gauss-Seidel
     Stopwatch sw;
     Mat mColorGaussSeidel(img.size(), img.type());
@@ -47,35 +59,24 @@ int main(int argc, char **argv) {
     cout << endl; 
 
     // Gauss classique
-    Mat mColorNoise(img.size(), img.type());
-    for (int i = 0; i < NOISE_ITER; ++i) {
-        AddGaussianNoise(img, mColorNoise, 0, 30.0);
-        if (i < (NOISE_ITER - 1)) {
-            uint8_t *tmp = img.data;
-            img.data = mColorNoise.data;
-            mColorNoise.data = tmp;
-        }
-    }
+    
+    // Convertie en nuance gris
+    // uint8_t *pixelPtr = (uint8_t *)img.data;
+    // int cn = img.channels();
 
-    // AddGaussianNoise_Opencv(img,mColorNoise,10,30.0);//I recommend to use
-    // this way!
+    // for (int i = 0; i < img.rows; i++) {
+    //     for (int j = 0; j < img.cols; j++) {
+    //         // bgrPixel.val[0] = 255; //B
+    //         uint8_t b = pixelPtr[i * img.cols * cn + j * cn + 0]; // B
+    //         uint8_t g = pixelPtr[i * img.cols * cn + j * cn + 1]; // G
+    //         uint8_t r = pixelPtr[i * img.cols * cn + j * cn + 2]; // R
+    //         uint8_t grey = r * 0.299 + g * 0.587 + b * 0.114;
 
-    uint8_t *pixelPtr = (uint8_t *)img.data;
-    int cn = img.channels();
-
-    for (int i = 0; i < img.rows; i++) {
-        for (int j = 0; j < img.cols; j++) {
-            // bgrPixel.val[0] = 255; //B
-            uint8_t b = pixelPtr[i * img.cols * cn + j * cn + 0]; // B
-            uint8_t g = pixelPtr[i * img.cols * cn + j * cn + 1]; // G
-            uint8_t r = pixelPtr[i * img.cols * cn + j * cn + 2]; // R
-            uint8_t grey = r * 0.299 + g * 0.587 + b * 0.114;
-
-            pixelPtr[i * img.cols * cn + j * cn + 0] = grey; // B
-            pixelPtr[i * img.cols * cn + j * cn + 1] = grey; // G
-            pixelPtr[i * img.cols * cn + j * cn + 2] = grey; // R
-        }
-    }
+    //         pixelPtr[i * img.cols * cn + j * cn + 0] = grey; // B
+    //         pixelPtr[i * img.cols * cn + j * cn + 1] = grey; // G
+    //         pixelPtr[i * img.cols * cn + j * cn + 2] = grey; // R
+    //     }i
+    // }
 
     fprintf(stdout, "Writting the output image of size %dx%d...\n", img.rows,
             img.cols);
