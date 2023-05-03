@@ -12,11 +12,11 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 ifeq ($(CC), g++)
 CC      ?= g++
-CFLAGS  += -Wall -O3
+CFLAGS  += -Wall -O3 -fopenmp
 LDFLAGS += -fopenmp -lstdc++
 else
 CC      ?= clang++
-CFLAGS  += -Wall -O3 
+CFLAGS  += -Wall -O3 -fopenmp
 LDFLAGS += -fopenmp -lstdc++
 endif
 

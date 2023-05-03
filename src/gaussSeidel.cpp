@@ -1,8 +1,8 @@
 #include "gaussSeidel.h"
-
+#include <omp.h>
 #include <opencv2/core/hal/interface.h>
 #include <opencv2/core/matx.hpp>
-//test
+
 inline uchar Clamp(int n) {
     n = n > 255 ? 255 : n;
     return n < 0 ? 0 : n;
@@ -50,7 +50,6 @@ inline void Blur(Mat const &mSrc, Mat const &mDst, Vec3b &Des_Pixel, int Row,
         Des_Pixel.val[i] = alpha;
     }
 }
-
 bool GaussSeidel_Seq(const Mat mSrc, Mat &mDst) {
     if (mSrc.empty()) {
         cout << "[Error]! Input Image Empty!";
@@ -69,6 +68,55 @@ bool GaussSeidel_Seq(const Mat mSrc, Mat &mDst) {
 void GaussSeidel_RowsSup(const Mat mSrc, Mat &mDst) {
     // Ascendance par ligne (Partie I)
     for (int Diag = 0; Diag < mSrc.cols; Diag++) {
+        for (int Row = 0; Row <= Diag; Row++) {
+            
+            int Col = Diag - Row;
+            Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+
+            // Debug
+            // Des_Pixel.val[0] = 255;
+            // Des_Pixel.val[1] = 0;
+            // Des_Pixel.val[2] = 0;
+            
+                Blur(mSrc, mDst, Des_Pixel, Row, Col);
+        }
+    }
+
+    // Translation du milieu (Partie II)
+    for (int Diag = mSrc.rows; Diag < mSrc.cols; Diag++) {
+        for (int Row = 0; Row < mSrc.rows; Row++) {
+            int Col = Diag - Row;
+            Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+
+            // Debug
+            // Des_Pixel.val[0] = 0;
+            // Des_Pixel.val[1] = 255;
+            // Des_Pixel.val[2] = 0;
+            Blur(mSrc, mDst, Des_Pixel, Row, Col);
+        }
+    }
+
+    // Descendance par colonne (Partie III)
+    // Le 1 est pour éviter la coupure avec le milieu
+    for (int t = 1; t < mSrc.rows; t++) {
+        int Diag = mSrc.cols + t - 1;
+        for (int Row = t; Row < mSrc.rows; Row++) {
+            int Col = Diag - Row;
+            Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+
+            // Debug
+            // Des_Pixel.val[0] = 0;
+            // Des_Pixel.val[1] = 0;
+            // Des_Pixel.val[2] = 255;
+            Blur(mSrc, mDst, Des_Pixel, Row, Col);
+        }
+    }
+
+}
+void GaussSeidel_ColsSup(const Mat mSrc, Mat &mDst) {
+
+    // Ascendance par ligne (Partie I)
+    for (int Diag = 0; Diag < mSrc.rows; Diag++) {
         for (int Row = 0; Row <= Diag; Row++) {
             int Col = Diag - Row;
             Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
@@ -115,7 +163,83 @@ void GaussSeidel_RowsSup(const Mat mSrc, Mat &mDst) {
     }
 
 }
-void GaussSeidel_ColsSup(const Mat mSrc, Mat &mDst) {
+bool GaussSeidel_Task(const Mat mSrc, Mat &mDst) {
+    if (mSrc.empty()) {
+        cout << "[Error]! Input Image Empty!";
+        return false;
+    }
+
+    if (mSrc.rows > mSrc.cols) {
+        GaussSeidel_RowsSup_Task(mSrc, mDst);
+    } else {
+        GaussSeidel_ColsSup_Task(mSrc, mDst);
+    }
+    return true;
+    
+}
+
+void GaussSeidel_RowsSup_Task(const Mat mSrc, Mat &mDst) {
+    // Ascendance par ligne (Partie I)
+    #pragma omp parallel
+    for (int Diag = 0; Diag < mSrc.cols; Diag++) {
+        for (int Row = 0; Row <= Diag; Row++) {
+            
+            int Col = Diag - Row;
+            Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+
+            // Debug
+            // Des_Pixel.val[0] = 255;
+            // Des_Pixel.val[1] = 0;
+            // Des_Pixel.val[2] = 0;
+            #pragma omp task shared(Des_Pixel) firstprivate(mSrc,mDst,Row,Col)
+            {
+                Blur(mSrc, mDst, Des_Pixel, Row, Col);
+            }
+        }
+        #pragma omp taskwait
+    }
+
+    // Translation du milieu (Partie II)
+    for (int Diag = mSrc.rows; Diag < mSrc.cols; Diag++) {
+        for (int Row = 0; Row < mSrc.rows; Row++) {
+            int Col = Diag - Row;
+            Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+
+            // Debug
+            // Des_Pixel.val[0] = 0;
+            // Des_Pixel.val[1] = 255;
+            // Des_Pixel.val[2] = 0;
+            #pragma omp task shared(Des_Pixel) firstprivate(mSrc,mDst,Row,Col)
+            {
+                Blur(mSrc, mDst, Des_Pixel, Row, Col);
+            }
+        }
+        #pragma omp taskwait
+    }
+
+    // Descendance par colonne (Partie III)
+    // Le 1 est pour éviter la coupure avec le milieu
+    for (int t = 1; t < mSrc.rows; t++) {
+        int Diag = mSrc.cols + t - 1;
+        for (int Row = t; Row < mSrc.rows; Row++) {
+            int Col = Diag - Row;
+            Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+
+            // Debug
+            // Des_Pixel.val[0] = 0;
+            // Des_Pixel.val[1] = 0;
+            // Des_Pixel.val[2] = 255;
+            #pragma omp task shared(Des_Pixel) firstprivate(mSrc,mDst,Row,Col)
+            {
+                Blur(mSrc, mDst, Des_Pixel, Row, Col);
+            }
+        }
+        #pragma omp taskwait
+    }
+
+}
+void GaussSeidel_ColsSup_Task(const Mat mSrc, Mat &mDst) {
+
     // Ascendance par ligne (Partie I)
     for (int Diag = 0; Diag < mSrc.rows; Diag++) {
         for (int Row = 0; Row <= Diag; Row++) {
