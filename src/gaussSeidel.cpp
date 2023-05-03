@@ -2,7 +2,7 @@
 
 #include <opencv2/core/hal/interface.h>
 #include <opencv2/core/matx.hpp>
-
+//test
 inline uchar Clamp(int n) {
     n = n > 255 ? 255 : n;
     return n < 0 ? 0 : n;
