@@ -45,5 +45,5 @@ clean: kokkos-clean
 %.o:%.cpp $(KOKKOS_CPP_DEPENDS)
 	$(CXX) $(KOKKOS_CPPFLAGS) $(KOKKOS_CXXFLAGS) $(CXXFLAGS) $(EXTRA_INC) -c $<
 
-test: $(EXE)
-	./$(EXE)
+run: $(EXE)
+	srun -N 1 --reservation=CHPS -p short --gres=gpu:1 ./gauss-seidel.cuda ../img/Amphi.jpg
