@@ -2,7 +2,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <opencv2/imgcodecs.hpp>
+
 #include <omp.h>
+#include <cstring>
 
 #include "gaussSeidel.h"
 #include "gaussianNoise.h"
@@ -14,10 +16,24 @@ using namespace std;
 #define NOISE_ITER 15
 
 int main(int argc, char **argv) {
+    bool isParallel = false;
+    bool isVerbose = true;
     CommandLineParser parser(argc, argv,
                              "{@input   |img/lena.jpg|input image}");
     //parser.printMessage();
-
+    for (int j=0;j<argc;j++) {
+        if(strcmp(argv[j],"-v") == 0) {
+            isVerbose = false;
+        } else if (strcmp(argv[j],"-p") == 0) {
+            if (isVerbose)
+                printf("Programme lancé en parallele\n");
+            isParallel = true;
+        } else if (strcmp(argv[j],"-h") == 0) {
+            if (isVerbose)
+                printf("Utilisation : ./gauss-seidel image\n -h Pour afficher ce message\n -p Pour lancer ce programme en parallèle");
+            isParallel = true;
+        }
+    }
     String imageName = parser.get<String>("@input");
     string image_path = samples::findFile(imageName);
     Mat img = imread(image_path, IMREAD_COLOR);
@@ -42,11 +58,18 @@ int main(int argc, char **argv) {
     Stopwatch sw;
     Mat mColorGaussSeidel(img.size(), img.type());
     img.copyTo(mColorGaussSeidel);
-    
-    printf("%-22s: %d iteration(s) \n", "Gauss-Seidel", NOISE_ITER);
+    if (isVerbose)
+        printf("%-22s: %d iteration(s) \n", "Gauss-Seidel", NOISE_ITER);
     sw.start();
     for (int i = 0; i < NOISE_ITER; ++i) {
-        GaussSeidel_Seq(img, mColorGaussSeidel);
+        if (isParallel) {
+            GaussSeidel_Task(img, mColorGaussSeidel);
+            //printf("test");
+        } else {
+            GaussSeidel_Seq(img, mColorGaussSeidel);
+            //printf("test2");
+        }
+            
         if (i < (NOISE_ITER - 1)) {
             uint8_t *tmp = img.data;
             img.data = mColorGaussSeidel.data;
@@ -54,6 +77,7 @@ int main(int argc, char **argv) {
         }
     }
     sw.stop();
+    if (isVerbose)
     printf("%-22s: ", "Time");
     sw.print_human_readable();
     cout << endl; 
@@ -77,8 +101,8 @@ int main(int argc, char **argv) {
     //         pixelPtr[i * img.cols * cn + j * cn + 2] = grey; // R
     //     }i
     // }
-
-    fprintf(stdout, "Writting the output image of size %dx%d...\n", img.rows,
+    if (isVerbose)
+        fprintf(stdout, "Writting the output image of size %dx%d...\n", img.rows,
             img.cols);
 
     imwrite("res/grey_res.png", img);

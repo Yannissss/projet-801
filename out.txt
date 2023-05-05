@@ -1,0 +1,3 @@
+Gauss-Seidel          : 15 iteration(s) 
+Time                  : 36.18s
+Writting the output image of size 2448x3264...
