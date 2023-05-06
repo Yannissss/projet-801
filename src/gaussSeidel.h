@@ -14,8 +14,8 @@ using namespace std;
 bool GaussSeidel_Seq(const Mat mSrc, Mat &mDst);
 void GaussSeidel_RowsSup(const Mat mSrc, Mat &mDst);
 void GaussSeidel_ColsSup(const Mat mSrc, Mat &mDst);
-bool GaussSeidel_Task(const Mat mSrc, Mat &mDst);
-void GaussSeidel_RowsSup_Task(const Mat mSrc, Mat &mDst);
-void GaussSeidel_ColsSup_Task(const Mat mSrc, Mat &mDst);
+bool GaussSeidel_Task(const Mat mSrc, Mat &mDst, int nbTasks);
+void GaussSeidel_RowsSup_Task(const Mat mSrc, Mat &mDst, int nbTasks);
+void GaussSeidel_ColsSup_Task(const Mat mSrc, Mat &mDst, int nbTasks);
 
 #endif

@@ -19,6 +19,6 @@ echo "--------------------------"
 echo "Modele     | temps exec"
 echo "--------------------------"
 echo -n "Sequentiel | "
-./gauss-seidel img/lena.jpg -v
+./gauss-seidel img/Loki.jpg -v
 echo -n "Parallele  | "
-./gauss-seidel img/lena.jpg -v -p
+./gauss-seidel img/Loki.jpg -v -p

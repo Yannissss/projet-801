@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
     sw.start();
     for (int i = 0; i < NOISE_ITER; ++i) {
         if (isParallel) {
-            GaussSeidel_Task(img, mColorGaussSeidel);
+            GaussSeidel_Task(img, mColorGaussSeidel, 10);
             //printf("test");
         } else {
             GaussSeidel_Seq(img, mColorGaussSeidel);

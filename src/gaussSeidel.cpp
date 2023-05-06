@@ -3,6 +3,7 @@
 #include <opencv2/core/hal/interface.h>
 #include <opencv2/core/matx.hpp>
 
+
 inline uchar Clamp(int n) {
     n = n > 255 ? 255 : n;
     return n < 0 ? 0 : n;
@@ -163,22 +164,22 @@ void GaussSeidel_ColsSup(const Mat mSrc, Mat &mDst) {
     }
 
 }
-bool GaussSeidel_Task(const Mat mSrc, Mat &mDst) {
+bool GaussSeidel_Task(const Mat mSrc, Mat &mDst, int nbTasks) {
     if (mSrc.empty()) {
         cout << "[Error]! Input Image Empty!";
         return false;
     }
 
     if (mSrc.rows > mSrc.cols) {
-        GaussSeidel_RowsSup_Task(mSrc, mDst);
+        GaussSeidel_RowsSup_Task(mSrc, mDst, nbTasks);
     } else {
-        GaussSeidel_ColsSup_Task(mSrc, mDst);
+        GaussSeidel_ColsSup_Task(mSrc, mDst, nbTasks);
     }
     return true;
     
 }
 
-void GaussSeidel_RowsSup_Task(const Mat mSrc, Mat &mDst) {
+void GaussSeidel_RowsSup_Task(const Mat mSrc, Mat &mDst, int nbTasks) {
     // Ascendance par ligne (Partie I)
     //int nbTasks=16; //nombre de taches OMP
     #pragma omp parallel
@@ -241,25 +242,29 @@ void GaussSeidel_RowsSup_Task(const Mat mSrc, Mat &mDst) {
         }
     }
 }
-void GaussSeidel_ColsSup_Task(const Mat mSrc, Mat &mDst) {
-    int nbTasks=10;
+void GaussSeidel_ColsSup_Task(const Mat mSrc, Mat &mDst, int nbTasks) {
+    //int nbTasks=10;
     #pragma omp parallel 
     #pragma omp single
-    {
+    {   
+        int start,end;
         // Ascendance par ligne (Partie I)
         for (int Diag = 0; Diag < mSrc.rows; Diag++) {
             //#pragma omp parallel for shared(Diag)
             for (int i=0;i<nbTasks;i++) {
-                int start=i*(Diag/nbTasks);
-                int end=(i+1)*(Diag/nbTasks);
+                start=i*Diag/nbTasks;
+                end=(i+1)*Diag/nbTasks;
                 if (end>=Diag)
                     end=Diag;
-                #pragma omp task if(end-start>=100) 
+                #pragma omp task if(end-start>=100)
                 {
                     for (int Row = start; Row <= end; Row++) {
                         int Col = Diag - Row;
                         Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
                         Blur(mSrc, mDst, Des_Pixel, Row, Col);
+                        // Des_Pixel.val[0] = 255;
+                        // Des_Pixel.val[1] = 0;
+                        // Des_Pixel.val[2] = 0;
                     }
                 }                
             }
@@ -280,12 +285,12 @@ void GaussSeidel_ColsSup_Task(const Mat mSrc, Mat &mDst) {
             // }
             
         }
-
+        
         // Translation du milieu (Partie II)
         for (int Diag = mSrc.rows; Diag < mSrc.cols; Diag++) {
             for (int i=0;i<nbTasks;i++) {
-                int start=i*(mSrc.rows/nbTasks);
-                int end=(i+1)*(mSrc.rows/nbTasks);
+                start=i*(mSrc.rows/nbTasks);
+                end=(i+1)*(mSrc.rows/nbTasks);
                 if (end>=mSrc.rows)
                     end=mSrc.rows;
                 #pragma omp task if(end-start>=100) 
@@ -293,6 +298,9 @@ void GaussSeidel_ColsSup_Task(const Mat mSrc, Mat &mDst) {
                     for (int Row = start; Row <= end; Row++) {
                         int Col = Diag - Row;
                         Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+                        // Des_Pixel.val[0] = 0;
+                        // Des_Pixel.val[1] = 255;
+                        // Des_Pixel.val[2] = 0;
                         Blur(mSrc, mDst, Des_Pixel, Row, Col);
                     }
                 }
@@ -313,39 +321,52 @@ void GaussSeidel_ColsSup_Task(const Mat mSrc, Mat &mDst) {
                 
             }*/
         }
-
+        
         // Descendance par colonne (Partie III)
         // Le 1 est pour éviter la coupure avec le milieu
         for (int t = 1; t < mSrc.rows; t++) {
+            // int Diag = mSrc.cols + t - 1;
+            // for (int i=0;i<nbTasks;i++) {
+            //     start=i*(mSrc.rows/nbTasks);
+            //     end=(i+1)*(mSrc.rows/nbTasks);
+            //     if (end>=mSrc.rows)
+            //         end=mSrc.rows;
+            //     #pragma omp task if(end-start>=100) 
+            //     {
+            //         for (int Row = start; Row <= end; Row++) {
+            //             int Col = Diag - Row;
+            //             Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
+            //             //Blur(mSrc, mDst, Des_Pixel, Row, Col);
+            //             // Debug
+            //             Des_Pixel.val[0] = 0;
+            //             Des_Pixel.val[1] = 0;
+            //             Des_Pixel.val[2] = 255;
+            //         }
+            //     }                
+            // }
+            
             int Diag = mSrc.cols + t - 1;
             for (int i=0;i<nbTasks;i++) {
-                int start=i*mSrc.rows/nbTasks+t;
-                int end=(i+1)*mSrc.rows/nbTasks;
-                if (end>=mSrc.rows)
+                start = i*(mSrc.rows/nbTasks)+(t-1);
+                end = (i+1)*(mSrc.rows/nbTasks)+(t-1);
+                if (end >= mSrc.rows)
                     end=mSrc.rows;
-                #pragma omp task if(end-start>=100) 
+                #pragma omp task if(end-start>=100)
                 {
-                    for (int Row = start; Row <= end; Row++) {
+                    for (int Row = start; Row < end; Row++) {
                         int Col = Diag - Row;
                         Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
-                        Blur(mSrc, mDst, Des_Pixel, Row, Col);
-                    }
-                }                
-            }
-            /*
-            int Diag = mSrc.cols + t - 1;
-            for (int Row = t; Row < mSrc.rows; Row++) {
-                int Col = Diag - Row;
-                Vec3b &Des_Pixel = mDst.at<Vec3b>(Row, Col);
 
-                // Debug
-                // Des_Pixel.val[0] = 0;
-                // Des_Pixel.val[1] = 0;
-                // Des_Pixel.val[2] = 255;
-                
-                    Blur(mSrc, mDst, Des_Pixel, Row, Col);
-                
-            }*/
+                        // Debug
+                        // Des_Pixel.val[0] = 0;
+                        // Des_Pixel.val[1] = 0;
+                        // Des_Pixel.val[2] = 255;
+                        
+                        Blur(mSrc, mDst, Des_Pixel, Row, Col);
+                    }   
+                }             
+            }
+
         }
     }
 }
