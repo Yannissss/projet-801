@@ -10,15 +10,9 @@ DEPS := $(OBJS:.o=.d)
 INC_DIRS  := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-ifeq ($(CC), g++)
-CC      ?= g++
-CFLAGS  += -Wall -O3 -fopenmp
+CC       = clang++
+CFLAGS  += -Wall -O3 --gcc-toolchain=/apps/2021/gcc/10.2/
 LDFLAGS += -fopenmp -lstdc++
-else
-CC      ?= clang++
-CFLAGS  += -Wall -O3 -fopenmp
-LDFLAGS += -fopenmp -lstdc++
-endif
 
 CFLAGS  += $(INC_FLAGS) -MMD -MP
 CFLAGS  += $(shell pkg-config --cflags opencv4)
