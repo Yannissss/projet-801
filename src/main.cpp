@@ -13,9 +13,11 @@
 using namespace cv;
 using namespace std;
 
-#define NOISE_ITER 50
+#define NOISE_ITER 25
+#define NB_TACHES 10
 
 int main(int argc, char **argv) {
+    int nbTasks = NB_TACHES;
     bool isParallel = false;
     bool isVerbose = true;
     CommandLineParser parser(argc, argv,
@@ -33,7 +35,18 @@ int main(int argc, char **argv) {
                 printf("Utilisation : ./gauss-seidel image\n -h Pour afficher ce message\n -p Pour lancer ce programme en parallèle");
             isParallel = true;
         }
+        std::string arg = argv[j];
+        try {
+            int n = std::stoi(arg);
+            //std::cout << "Argument is an integer: " << n << std::endl;
+            nbTasks = n;
+        } catch (const std::invalid_argument&) {
+            //std::cout << "Argument is not an integer: " << arg << std::endl;
+        } catch (const std::out_of_range&) {
+            //std::cout << "Argument is out of range: " << arg << std::endl;
+        }
     }
+
     String imageName = parser.get<String>("@input");
     string image_path = samples::findFile(imageName);
     Mat img = imread(image_path, IMREAD_COLOR);
@@ -63,7 +76,7 @@ int main(int argc, char **argv) {
     sw.start();
     for (int i = 0; i < NOISE_ITER; ++i) {
         if (isParallel) {
-            GaussSeidel_Task(img, mColorGaussSeidel, 10);
+            GaussSeidel_Task(img, mColorGaussSeidel, nbTasks);
             //printf("test");
         } else {
             GaussSeidel_Seq(img, mColorGaussSeidel);

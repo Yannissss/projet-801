@@ -366,6 +366,7 @@ void GaussSeidel_ColsSup_Task(const Mat mSrc, Mat &mDst, int nbTasks) {
                     }   
                 }             
             }
+			#pragma omp taskwait 
 
         }
     }
