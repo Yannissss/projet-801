@@ -16,9 +16,12 @@ module list
 
 echo "Algorithme de Gauss-Seidel"
 echo "--------------------------"
-echo "Modele     | temps exec"
+echo "Modele     | Nb Taches | temps exec"
 echo "--------------------------"
-echo -n "Sequentiel | "
+echo -n "Sequentiel |           | "
 ./gauss-seidel img/Loki.jpg -v
-echo -n "Parallele  | "
-./gauss-seidel img/Loki.jpg -v -p
+for i in 10 20 50 100
+do
+    echo -n "Parallele  | $i        | "
+    ./gauss-seidel img/Loki.jpg $i -v -p
+done
