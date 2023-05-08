@@ -11,7 +11,7 @@
 using namespace cv;
 using namespace std;
 
-#define NOISE_ITER 15
+#define NOISE_ITER 50
 
 int main(int argc, char **argv) {
     CommandLineParser parser(argc, argv,

@@ -1,5 +1,5 @@
-KOKKOS_PATH ?= ${HOME}/Kokkos/kokkos
-KOKKOS_DEVICES = "Cuda,OpenMP"
+KOKKOS_PATH    ?= ${HOME}/Kokkos/kokkos
+KOKKOS_DEVICES ?= "Cuda,OpenMP"
 EXE_NAME = "gauss-seidel"
 
 SRC = $(wildcard *.cpp)
@@ -46,4 +46,4 @@ clean: kokkos-clean
 	$(CXX) $(KOKKOS_CPPFLAGS) $(KOKKOS_CXXFLAGS) $(CXXFLAGS) $(EXTRA_INC) -c $<
 
 run: $(EXE)
-	srun -N 1 --reservation=CHPS -p short --gres=gpu:1 ./gauss-seidel.cuda ../img/Amphi.jpg
+	srun -N 1 --reservation=CHPS -p short --gres=gpu:1 ./gauss-seidel.cuda ../img/flowers.jpg

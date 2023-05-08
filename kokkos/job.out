@@ -1,0 +1,127 @@
+Currently Loaded Modulefiles:
+ 1) gcc/10.2.0   2) cuda/11.4   3) opencv/4.5.1  
+JobID: 2704725
+Job start time: Mon May  8 15:22:43 CEST 2023
+Running on master node: romeo27.ro18.urca
+Current directory: /home/yaondars/Cours/CHPS801/projet-801/kokkos
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:1)
+		noise iterations
+Time: 2.6048e-05s
+Writting the output image of size 1200x1920...
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:10)
+		noise iterations
+Time: 6.6805e-05s
+Writting the output image of size 1200x1920...
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:25)
+		noise iterations
+Time: 0.000135183s
+Writting the output image of size 1200x1920...
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:50)
+		noise iterations
+Time: 0.000250247s
+Writting the output image of size 1200x1920...
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:100)
+		noise iterations
+Time: 0.00045766s
+Writting the output image of size 1200x1920...
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:200)
+		noise iterations
+Time: 0.000894132s
+Writting the output image of size 1200x1920...
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:500)
+		noise iterations
+Time: 0.00218089s
+Writting the output image of size 1200x1920...
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:1000)
+		noise iterations
+Time: 0.14696s
+Writting the output image of size 1200x1920...
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:2000)
+		noise iterations
+Time: 0.438097s
+Writting the output image of size 1200x1920...
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:5000)
+		noise iterations
+Time: 1.27436s
+Writting the output image of size 1200x1920...
+Usage: gauss-seidel.cuda [params] image N 
+
+	-?, -h, --help, --usage
+		print this message
+
+	image (value:../img/Amphi.jpg)
+		input image
+	N (value:10000)
+		noise iterations
+Time: 2.65833s
+Writting the output image of size 1200x1920...

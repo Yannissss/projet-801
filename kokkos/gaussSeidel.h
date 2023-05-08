@@ -12,6 +12,6 @@ using namespace std;
 using ExecSpace = Kokkos::Cuda;
 using ViewMatrixType = Kokkos::View<uchar**[3], ExecSpace>;
 
-bool GaussSeidel(ViewMatrixType &img, int rows, int cols);
+bool GaussSeidel(ViewMatrixType &img, ViewMatrixType &dst, int rows, int cols);
 
 #endif
